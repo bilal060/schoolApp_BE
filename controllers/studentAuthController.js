@@ -1,5 +1,4 @@
 const {promisify} = require('util')
-const studenUser = require('../models/studentUserModel');
 const studentUserImage = require('../models/studentUserImageModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -46,11 +45,11 @@ exports.studentSignUp = catchAsync(async (req, res,next) => {
     city,
     dob,
   } = req.body;
-  const checkEmail = await studenUser.findOne({email})
+  const checkEmail = await Student_user.findOne({email})
   if(checkEmail){
     return next(new AppError('email already exist', 400))
   }
-  const user = new studenUser({
+  const user = new Student_user({
     name,
     email,
     password,
@@ -84,7 +83,7 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
   if (!(email, otp)) {
     return next(new AppError('please provide email and otp !', 400))
   }
-  const user = await studenUser.findOne({email}).select('+password')
+  const user = await Student_user.findOne({email}).select('+password')
 
   if(!user.otp){
     return next(new AppError('No OTP Matched By this email', 401))
@@ -115,7 +114,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   let user;
-  user = await studenUser.findOne({ email }).select('+password +verified')
+  user = await Student_user.findOne({ email }).select('+password +verified')
   if (!user) {
     return next(new AppError('Email Not Available in DB', 404))
   }
@@ -138,7 +137,7 @@ exports.login = catchAsync(async (req, res, next) => {
 }
 )
 exports.forgotpassword = catchAsync(async (req,res,next)=>{
-const user = await studenUser.findOne({email:req.body.email})
+const user = await Student_user.findOne({email:req.body.email})
 if(!user){
   return next(new AppError('No user have with this email', 404 )) 
 }
@@ -166,7 +165,7 @@ try{
 
 })
 exports.resendOTP = catchAsync(async (req,res,next)=>{
-  const user = await studenUser.findOne({email:req.body.email})
+  const user = await Student_user.findOne({email:req.body.email})
   if(!user){
     return next(new AppError('No user have with this email', 404 )) 
   }
@@ -198,7 +197,7 @@ exports.otpverify = catchAsync(async (req, res, next) => {
   if (!(email, otp)) {
     return next(new AppError('please provide email and otp !', 400))
   }
-  const user = await studenUser.findOne({email}).select('+password')
+  const user = await Student_user.findOne({email}).select('+password')
 
   if(!user.otp){
     return next(new AppError('No OTP Matched By this email', 401))
@@ -224,7 +223,7 @@ exports.resetPassword =catchAsync( async (req,res,next)=>{
   if(!(email && newPass)){
     return next(new AppError('Values are null', 400))
 }
-const existingData = await studenUser.findOne({email})
+const existingData = await Student_user.findOne({email})
 if(!existingData){
   return next(new AppError('User not exist', 400))
 }
@@ -245,7 +244,7 @@ await existingData.save()
 });
 
 exports.resendOTP = catchAsync(async (req,res,next)=>{
-  const user = await studenUser.findOne({email:req.body.email})
+  const user = await Student_user.findOne({email:req.body.email})
   if(!user){
     return next(new AppError('No user have with this email', 404 )) 
   }
@@ -277,7 +276,7 @@ exports.resendOTP = catchAsync(async (req,res,next)=>{
   exports.updateStudentUser =catchAsync( async (req, res, next) => {
     const userId = req.params.id;
     let findUser 
-     findUser = await studenUser.findById(userId)
+     findUser = await Student_user.findById(userId)
     if(!findUser){
       return(new AppError('user not found',404))
     }
@@ -286,7 +285,7 @@ exports.resendOTP = catchAsync(async (req,res,next)=>{
       email=findUser.email
     }
     const updateFields = { name, email, phone1, phone2, state, city, dob };
-    const studentUser = await studenUser.findById(userId);
+    const studentUser = await Student_user.findById(userId);
     let newImage;
     let oldImage;
     if (req.file?.path) {
@@ -302,7 +301,7 @@ exports.resendOTP = catchAsync(async (req,res,next)=>{
     } else {
       oldImage = await studentUserImage.findOne({ user: studentUser._id });
     }
-    const user = await studenUser.findByIdAndUpdate(userId, updateFields, {
+    const user = await Student_user.findByIdAndUpdate(userId, updateFields, {
       new: true,
     });
     if (!user) {

@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const { json } = require("body-parser");
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
+const studenUser = require('../models/studentUserModel');
 
 
 
@@ -28,14 +29,14 @@ const CreateStudent =catchAsync( async (req, res ,next) => {
 
 });
 const getStudennts =catchAsync( async (req, res ,next) => {
-    const students = await Student.find();
+    const students = await studenUser.find();
     res.status(200).json({
       students
     })
 })
 const getStudent =catchAsync( async (req, res ,next)  => {
   const studentId = req.params.id;
-    const student = await Student.findOne({ studentId });
+    const student = await studenUser.findOne({ studentId });
     if (!student) {
       return  next(new AppError('Student not found', 400));
     }
@@ -54,7 +55,7 @@ const updateStudent =catchAsync( async (req, res ,next) => {
 })
 const deleteStudent =catchAsync( async (req, res,next) => {
   const studentId = req.params.id;
-    const student = await Student.findOneAndDelete({ studentId });
+    const student = await studenUser.findOneAndDelete({ studentId });
     if (!student) {
       return  next(new AppError('Student not found', 400));
     }
